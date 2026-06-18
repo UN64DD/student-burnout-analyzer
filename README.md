@@ -42,7 +42,8 @@ This application aims to:
 ### Data Management (In Progress)
 
 * CSV File Storage (header-only, awaiting record persistence)
-* HistoryManager and CSVUtil stubs for future save/load functionality
+* HistoryManager stub for future save/load functionality
+* CSVUtil stub for future CSV read/write operations
 
 ### User Interface
 
@@ -164,6 +165,26 @@ StudentBurnoutAnalyzer/
 
 ---
 
+## Implementation Notes
+
+### Activity Hierarchy (Stub)
+
+The `Activity` abstract class and its subclasses (`StudyActivity`, `SleepActivity`, `ExerciseActivity`) define the Template Method pattern structure. Their `calculateImpact()` methods currently return `0.0` and await implementation. The burnout calculation is handled directly by `BurnoutCalculator` using `DailyRecord` fields.
+
+### Recommendation Engine (Stub)
+
+`RecommendationEngine.generateRecommendation()` currently returns a hardcoded string. The method is ready to be extended with risk-level-specific advice based on `DailyRecord` data.
+
+### Data Persistence (Stub)
+
+`HistoryManager` and `CSVUtil` are stubs. The CSV file (`data/records.csv`) contains only a header row. Recording and loading saved entries is not yet implemented.
+
+### AnalysisFrame (Legacy)
+
+`AnalysisFrame` is a secondary window retained for backward compatibility. The main application uses `ResultsPanel` for inline result display.
+
+---
+
 ## UML Design
 
 Core Classes:
@@ -190,8 +211,40 @@ Core Classes:
 
 ---
 
+## How to Build & Run
+
+### Prerequisites
+
+* Java 21 or later
+* `java` and `javac` (for building) available on PATH
+
+### Quick Run (JAR)
+
+A pre-built JAR is provided at the project root:
+
+```bash
+java -jar StudentBurnoutAnalyzer.jar
+```
+
+### Build from Source
+
+```bash
+cd StudentBurnoutAnalyzer
+javac -d bin src/**/*.java
+```
+
+### Run from Compiled Classes
+
+```bash
+java -cp bin app.Main
+```
+
+---
+
 ## Future Enhancements
 
+* Implement Activity subclass `calculateImpact()` methods
+* Tailored recommendations per risk level
 * Weekly Burnout Trend Charts
 * Data Visualization Dashboard
 * Export Reports to PDF
