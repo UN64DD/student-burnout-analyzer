@@ -1,116 +1,168 @@
-# Class Diagram
++--------------------------------------------------+
+|                <<abstract>> Activity             |
++--------------------------------------------------+
+| # hours : double                                 |
++--------------------------------------------------+
+| + Activity(hours : double)                       |
+| + getHours() : double                            |
+| + setHours(hours : double) : void                |
+| + calculateImpact() : double                     |
++--------------------------------------------------+
+            ^                ^                ^
+            |                |                |
+            | extends        | extends        | extends
+            |                |                |
++----------------+  +----------------+  +----------------+
+| StudyActivity  |  | SleepActivity  |  | ExerciseActivity|
++----------------+  +----------------+  +----------------+
+| +calculateImpact()| | +calculateImpact()| |+calculateImpact()|
++----------------+  +----------------+  +----------------+
 
-```mermaid
-classDiagram
-    class Activity {
-        <<abstract>>
-        # double hours
-        + Activity(double hours)
-        + getHours() double
-        + setHours(double) void
-        + calculateImpact()* double
-    }
 
-    class StudyActivity {
-        + StudyActivity(double hours)
-        + calculateImpact() double
-    }
++--------------------------------------------------+
+|                  DailyRecord                     |
++--------------------------------------------------+
+| - studyHours : double                            |
+| - sleepHours : double                            |
+| - exerciseHours : double                         |
+| - assignmentCount : int                          |
+| - burnoutScore : double                          |
+| - riskLevel : String                             |
++--------------------------------------------------+
+| + getters/setters                                |
+| + toString() : String                            |
++--------------------------------------------------+
 
-    class SleepActivity {
-        + SleepActivity(double hours)
-        + calculateImpact() double
-    }
 
-    class ExerciseActivity {
-        + ExerciseActivity(double hours)
-        + calculateImpact() double
-    }
++--------------------------------------------------+
+|               BurnoutCalculator                  |
++--------------------------------------------------+
+| - MAX_SCORE : double                             |
++--------------------------------------------------+
+| + calculateBurnout(record) : double              |
+| + calculateBurnout(studyHours) : double          |
+| + calculateBurnout(studyHours,sleepHours):double |
+| + determineRiskLevel(score) : String             |
++--------------------------------------------------+
+                    |
+                    | uses
+                    v
+               DailyRecord
 
-    class DailyRecord {
-        - double studyHours
-        - double sleepHours
-        - double exerciseHours
-        - int assignmentCount
-        - double burnoutScore
-        - String riskLevel
-        + DailyRecord()
-        + DailyRecord(double, double, double, int)
-        + DailyRecord(double, double, double, int, double, String)
-        + getters/setters...
-        + toString() String
-    }
 
-    class BurnoutCalculator {
-        + calculateBurnout(DailyRecord) double
-        + calculateBurnout(int) double
-        + calculateBurnout(int, int) double
-    }
++--------------------------------------------------+
+|             RecommendationEngine                 |
++--------------------------------------------------+
+| + generateRecommendation(record) : String        |
++--------------------------------------------------+
+                    |
+                    | uses
+                    v
+               DailyRecord
 
-    class RecommendationEngine {
-        + generateRecommendation(DailyRecord) String
-    }
 
-    class HistoryManager {
-        + saveRecord(DailyRecord) void
-        + loadRecords() List~DailyRecord~
-    }
++--------------------------------------------------+
+|              ValidationUtil                      |
++--------------------------------------------------+
+| - MAX_HOURS : double                             |
+| - MAX_ASSIGNMENTS : int                          |
++--------------------------------------------------+
+| + validateHours(hours) : void                    |
+| + validateAssignments(count) : void              |
++--------------------------------------------------+
+                    |
+                    | throws
+                    v
 
-    class InvalidHoursException {
-        + InvalidHoursException(String)
-    }
++--------------------------------------------------+
+|             InvalidHoursException                |
++--------------------------------------------------+
+| + InvalidHoursException(message)                 |
++--------------------------------------------------+
 
-    class CSVUtil {
-        + writeCSV(String, List~DailyRecord~) void
-        + readCSV(String) List~DailyRecord~
-    }
 
-    class ValidationUtil {
-        + validateHours(double) void
-        + validateAssignments(int) void
-    }
++--------------------------------------------------+
+|                HistoryManager                    |
++--------------------------------------------------+
+| + saveRecord(record) : void                      |
+| + loadRecords() : List<DailyRecord>              |
++--------------------------------------------------+
+                    |
+                    | uses
+                    v
 
-    class MainFrame {
-        + MainFrame()
-        - initMenuBar() void
-        - initComponents() void
-        - handleExit() void
-        - handleNewRecord() void
-        - handleViewAnalysis() void
-    }
++--------------------------------------------------+
+|                    CSVUtil                       |
++--------------------------------------------------+
+| + writeCSV(...) : void                           |
+| + readCSV(...) : List<DailyRecord>               |
++--------------------------------------------------+
 
-    class RecordForm {
-        + RecordForm()
-        - initFields() void
-        - initButtons() void
-        - handleSave() void
-        - handleAnalyze() void
-    }
 
-    class AnalysisFrame {
-        + AnalysisFrame()
-        - initComponents() void
-        + displayResults(String) void
-    }
+====================================================
+                    GUI LAYER
+====================================================
 
-    class Main {
-        + main(String[]) void
-    }
++--------------------------------------------------+
+|                  MainFrame                       |
++--------------------------------------------------+
+| + MainFrame()                                    |
+| - initComponents()                               |
+| - handleNewRecord()                              |
+| - handleViewAnalysis()                           |
+| - handleExit()                                   |
++--------------------------------------------------+
+                    |
+                    | contains
+                    v
 
-    %% Inheritance
-    Activity <|-- StudyActivity
-    Activity <|-- SleepActivity
-    Activity <|-- ExerciseActivity
++--------------------------------------------------+
+|                  RecordForm                      |
++--------------------------------------------------+
+| - studyField : JTextField                        |
+| - sleepField : JTextField                        |
+| - exerciseField : JTextField                     |
+| - assignmentSpinner : JSpinner                   |
+| - saveButton : JButton                           |
+| - analyzeButton : JButton                        |
++--------------------------------------------------+
+| - handleSave()                                   |
+| - handleAnalyze()                                |
+| - determineRiskLevel()                           |
+| - buildResultText()                              |
++--------------------------------------------------+
+     |               |                |
+     | uses          | uses           | uses
+     v               v                v
 
-    %% Dependencies
-    BurnoutCalculator ..> DailyRecord : uses
-    RecommendationEngine ..> DailyRecord : uses
-    HistoryManager ..> DailyRecord : uses
-    CSVUtil ..> DailyRecord : uses
-    ValidationUtil ..> InvalidHoursException : throws
-    MainFrame ..> RecordForm : contains
-    MainFrame ..> AnalysisFrame : opens
-    Main ..> MainFrame : launches
-    RecordForm ..> BurnoutCalculator : calls
-    RecordForm ..> ValidationUtil : calls
-    AnalysisFrame ..> RecommendationEngine : uses
-```
+ ValidationUtil  BurnoutCalculator  RecommendationEngine
+
+                    |
+                    | creates
+                    v
+
+               DailyRecord
+
+                    |
+                    | opens
+                    v
+
++--------------------------------------------------+
+|                AnalysisFrame                     |
++--------------------------------------------------+
+| - resultArea : JTextArea                         |
++--------------------------------------------------+
+| + displayResults(result)                         |
++--------------------------------------------------+
+
+
++--------------------------------------------------+
+|                     Main                         |
++--------------------------------------------------+
+| + main(String[])                                 |
++--------------------------------------------------+
+                    |
+                    | launches
+                    v
+
+               MainFrame
