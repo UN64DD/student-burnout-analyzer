@@ -39,11 +39,10 @@ This application aims to:
 * Personalized Recommendations
 * Warning Notifications
 
-### Data Management
+### Data Management (In Progress)
 
-* Save Daily Records
-* Load Historical Records
-* CSV File Storage
+* CSV File Storage (header-only, awaiting record persistence)
+* HistoryManager and CSVUtil stubs for future save/load functionality
 
 ### User Interface
 
@@ -85,6 +84,23 @@ calculateBurnout(int studyHours)
 calculateBurnout(int studyHours, int sleepHours)
 ```
 
+### Functional Interface / Callback Pattern
+
+```java
+@FunctionalInterface
+public interface AnalysisCallback {
+    void onAnalysisComplete(double score, String riskLevel, String recommendation);
+}
+```
+
+### Template Method Pattern
+
+```java
+public abstract class Activity {
+    public abstract double calculateImpact();
+}
+```
+
 ### Exception Handling
 
 * Input Validation
@@ -102,27 +118,25 @@ InvalidHoursException
 
 ## Mathematical Model
 
-The application uses a custom burnout formula:
+The application uses the following burnout formula, clamped to [0, 100]:
 
-Burnout Score =
+```
+score = (studyHours × 6.0)
+      - (sleepHours × 3.0)
+      - (exerciseHours × 2.0)
+      + (assignmentCount × 3.0)
+```
 
-(Study Hours × 2.0)
-+
-(Assignment Count × 1.5)
-------------------------
-
-## (Sleep Hours × 1.5)
-
-(Exercise Hours × 1.2)
+Study hours and assignment count increase the burnout score, while sleep and exercise hours decrease it.
 
 ### Risk Levels
 
 | Score Range | Risk Level |
 | ----------- | ---------- |
-| 0 - 10      | Low        |
-| 11 - 20     | Moderate   |
-| 21 - 30     | High       |
-| 31+         | Critical   |
+| 0 – 29      | Low        |
+| 30 – 59     | Moderate   |
+| 60 – 79     | High       |
+| 80 – 100    | Critical   |
 
 ---
 
@@ -132,18 +146,19 @@ Burnout Score =
 StudentBurnoutAnalyzer/
 │
 ├── src/
-│   ├── app/
-│   ├── model/
-│   ├── service/
-│   ├── exception/
-│   ├── ui/
-│   └── util/
+│   ├── app/              # Application entry point (Main.java)
+│   ├── model/            # Domain classes (Activity hierarchy, DailyRecord)
+│   ├── service/          # Business logic (BurnoutCalculator, RecommendationEngine, HistoryManager)
+│   ├── exception/        # Custom exceptions (InvalidHoursException)
+│   ├── ui/               # GUI components (MainFrame, RecordForm, ResultsPanel, AnalysisFrame, AnalysisCallback)
+│   └── util/             # Utilities (ValidationUtil, CSVUtil)
 │
+├── bin/                  # Compiled .class files
 ├── data/
-│   └── records.csv
-│
+│   └── records.csv       # CSV data store (header only, awaiting persistence)
 ├── docs/
-│
+│   └── class-diagram.md  # ASCII UML class diagram
+├── .gitignore
 └── README.md
 ```
 
@@ -153,29 +168,24 @@ StudentBurnoutAnalyzer/
 
 Core Classes:
 
-* Activity (Abstract)
-* StudyActivity
-* SleepActivity
-* ExerciseActivity
-* DailyRecord
-* BurnoutCalculator
-* RecommendationEngine
-* HistoryManager
-* CSVUtil
-* ValidationUtil
-* InvalidHoursException
-* MainFrame
-* RecordForm
-* AnalysisFrame
+| Package      | Classes |
+|-------------|---------|
+| **model**   | `Activity` (abstract), `StudyActivity`, `SleepActivity`, `ExerciseActivity`, `DailyRecord` |
+| **service** | `BurnoutCalculator`, `RecommendationEngine`, `HistoryManager` |
+| **util**    | `ValidationUtil`, `CSVUtil` |
+| **exception** | `InvalidHoursException` |
+| **ui**      | `MainFrame`, `RecordForm`, `ResultsPanel`, `AnalysisFrame`, `AnalysisCallback` |
+| **app**     | `Main` |
 
 ---
 
 ## Technologies Used
 
 * Java 21
-* Java Swing
-* Object-Oriented Programming
-* CSV File Handling
+* Java Swing (Desktop GUI)
+* Object-Oriented Programming (Abstraction, Inheritance, Polymorphism, Encapsulation)
+* Design Patterns: Template Method (Activity), Observer/Callback (AnalysisCallback)
+* CSV File Handling (planned)
 * VS Code
 
 ---
