@@ -115,6 +115,35 @@ public abstract class Activity {
 InvalidHoursException
 ```
 
+### Message Passing
+
+```java
+// Direct object-to-object method calls
+double burnoutScore = burnoutCalculator.calculateBurnout(record);
+record.setBurnoutScore(burnoutScore);
+
+// Query messages between layers
+double studyHours = record.getStudyHours();
+int assignmentCount = record.getAssignmentCount();
+
+// Callback / Observer pattern
+@FunctionalInterface
+public interface AnalysisCallback {
+    void onAnalysisComplete(double score, String riskLevel, String recommendation);
+}
+```
+
+Objects communicate by sending messages (method calls) to each other. `RecordForm` sends calculation messages to `BurnoutCalculator`, which in turn sends query messages to `DailyRecord`. The `AnalysisCallback` functional interface decouples the sender (`RecordForm`) from the receiver (`ResultsPanel`), with `MainFrame` wiring them together.
+
+### Event-Driven Message Passing
+
+```java
+analyzeButton.addActionListener(e -> handleAnalyze());
+exitItem.addActionListener(e -> System.exit(0));
+```
+
+Swing button clicks trigger `actionPerformed` events, which Swing dispatches to registered listeners — an event-driven form of message passing between UI components and application logic.
+
 ---
 
 ## Mathematical Model
@@ -375,7 +404,7 @@ The `Activity` abstract class and its subclasses (`StudyActivity`, `SleepActivit
 
 * Java 21
 * Java Swing (Desktop GUI)
-* Object-Oriented Programming (Abstraction, Inheritance, Polymorphism, Encapsulation)
+* Object-Oriented Programming (Abstraction, Inheritance, Polymorphism, Encapsulation, Message Passing)
 * Design Patterns: Template Method (Activity), Observer/Callback (AnalysisCallback)
 * CSV File Handling (planned)
 * VS Code
